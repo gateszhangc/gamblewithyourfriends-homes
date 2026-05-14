@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gamble With Your Friends — Online Co-op Casino Crawler</title>
+  <meta name="description" content="An online 1-6 player co-op casino crawler where you and your friends share one bank account and one massive debt. Gamble, buy sketchy items, make terrible decisions, and climb an ominous casino tower to hit your loan shark's daily quota in 5 minutes — or face the consequences.">
+  <meta name="keywords" content="Gamble With Your Friends, casino crawler, co-op game, online multiplayer, gambling game, steam, indie game, TENSTACK, party game, casino game">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://gamblewithyourfriends.com/">
+  <meta property="og:title" content="Gamble With Your Friends — Online Co-op Casino Crawler">
+  <meta property="og:description" content="An online 1-6 player co-op casino crawler where you and your friends share one bank account and one massive debt. Gamble, buy sketchy items, make terrible decisions, and climb an ominous casino tower.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://gamblewithyourfriends.com/">
+  <meta property="og:image" content="/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Gamble With Your Friends — Online Co-op Casino Crawler">
+  <meta name="twitter:description" content="An online 1-6 player co-op casino crawler. Share one bank account, one massive debt. Climb the tower together.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0d0d0d;
+      --surface: #141414;
+      --surface2: #1a1a1a;
+      --border: #222;
+      --text: #e8e8e8;
+      --text-secondary: #888;
+      --accent: #FFD700;
+      --accent-dark: #B8860B;
+      --green: #2ecc71;
+      --red: #e74c3c;
+      --purple: #9b59b6;
+      --container: 960px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ---- Navigation ---- */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(13, 13, 13, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    nav .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 18px;
+      text-decoration: none;
+      color: var(--accent);
+      font-family: 'Playfair Display', serif;
+    }
+
+    nav .logo img {
+      height: 36px;
+      width: auto;
+    }
+
+    nav .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      list-style: none;
+    }
+
+    nav .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    nav .nav-links a:hover {
+      color: var(--accent);
+    }
+
+    .nav-cta {
+      background: var(--accent);
+      color: #000 !important;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-weight: 600 !important;
+      font-size: 13px !important;
+    }
+
+    .nav-cta:hover {
+      background: #ffe44d !important;
+    }
+
+    /* ---- Hero ---- */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 0 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(255, 215, 0, 0.03) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 50%, rgba(155, 89, 182, 0.03) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero .container {
+      position: relative;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255, 215, 0, 0.1);
+      border: 1px solid rgba(255, 215, 0, 0.2);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 64px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+
+    .hero h1 span {
+      color: var(--accent);
+    }
+
+    .hero .subtitle {
+      font-size: 18px;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0 auto 32px;
+      line-height: 1.6;
+    }
+
+    .hero .reviews {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 36px;
+      font-size: 14px;
+    }
+
+    .hero .stars {
+      color: var(--accent);
+      font-size: 18px;
+      letter-spacing: 2px;
+    }
+
+    .hero .review-text {
+      color: var(--text-secondary);
+    }
+
+    .hero .review-text strong {
+      color: var(--text);
+    }
+
+    .hero-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #000;
+      padding: 14px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 16px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(255, 215, 0, 0.25);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--text);
+      padding: 14px 28px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      border: 1px solid var(--border);
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ---- Sections ---- */
+    section {
+      padding: 100px 0;
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+
+    .section-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      max-width: 640px;
+      line-height: 1.7;
+    }
+
+    /* ---- About section ---- */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: start;
+      margin-top: 48px;
+    }
+
+    .about-text p {
+      margin-bottom: 20px;
+      color: var(--text-secondary);
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+    .about-text p strong {
+      color: var(--text);
+    }
+
+    .about-features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: border-color 0.2s;
+    }
+
+    .feature-card:hover {
+      border-color: rgba(255, 215, 0, 0.3);
+    }
+
+    .feature-card .icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .feature-card h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #fff;
+    }
+
+    .feature-card p {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ---- Gameplay section ---- */
+    .gameplay-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .gameplay-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gameplay-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--accent);
+      opacity: 0.3;
+    }
+
+    .gameplay-card:nth-child(2)::before { background: var(--purple); }
+    .gameplay-card:nth-child(3)::before { background: var(--green); }
+    .gameplay-card:nth-child(4)::before { background: var(--red); }
+
+    .gameplay-card .icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+
+    .gameplay-card h4 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+
+    .gameplay-card p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* ---- Features list ---- */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 48px;
+    }
+
+    .feature-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .feature-item .emoji {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .feature-item h5 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .feature-item p {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    /* ---- System Reqs ---- */
+    .reqs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .reqs-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+    }
+
+    .reqs-card h4 {
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+      color: var(--accent);
+    }
+
+    .reqs-card ul {
+      list-style: none;
+    }
+
+    .reqs-card ul li {
+      padding: 8px 0;
+      font-size: 14px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .reqs-card ul li:last-child {
+      border-bottom: none;
+    }
+
+    .reqs-card ul li span {
+      color: var(--text);
+    }
+
+    /* ---- Tags ---- */
+    .tags-section {
+      padding: 60px 0;
+    }
+
+    .tags-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .tag {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 6px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .tag:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ---- CTA ---- */
+    .cta-section {
+      text-align: center;
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cta-section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 40px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+
+    .cta-section p {
+      font-size: 16px;
+      color: var(--text-secondary);
+      max-width: 500px;
+      margin: 0 auto 32px;
+    }
+
+    /* ---- Footer ---- */
+    footer {
+      padding: 48px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    footer .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    footer .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    footer .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+
+    footer .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    footer .copyright {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    /* ---- Divider ---- */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0;
+    }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 36px;
+      }
+
+      .hero .subtitle {
+        font-size: 16px;
+      }
+
+      nav .nav-links {
+        display: none;
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      .about-features {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .gameplay-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .reqs-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-title {
+        font-size: 28px;
+      }
+
+      .cta-section h2 {
+        font-size: 28px;
+      }
+
+      footer .container {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .about-features {
+        grid-template-columns: 1fr;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="container">
+      <a href="#" class="logo">
+        <img src="/logo.svg" alt="Gamble With Your Friends" height="36">
+        GWYF
+      </a>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#gameplay">Gameplay</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#specs">Specs</a></li>
+        <li><a href="https://store.steampowered.com/app/3892270/Gamble_With_Your_Friends/" class="nav-cta" target="_blank" rel="noopener">Play Now</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="hero" id="hero">
+    <div class="container">
+      <div class="hero-badge">Now Available on Steam</div>
+      <h1>Gamble <span>With Your</span> Friends</h1>
+      <p class="subtitle">
+        An online 1-6 player co-op casino crawler. Share one bank account, one massive debt,
+        and five minutes per day to climb an ominous casino tower — or face the consequences.
+      </p>
+      <div class="reviews">
+        <span class="stars">★★★★★</span>
+        <span class="review-text"><strong>Very Positive</strong> — 88% of 3,917 reviews</span>
+      </div>
+      <div class="hero-buttons">
+        <a href="https://mirofish.my/" class="btn-primary" target="_blank" rel="noopener">
+          Play Now on Steam
+        </a>
+        <a href="#about" class="btn-secondary">Learn More</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="container">
+      <div class="section-label">About the Game</div>
+      <h2 class="section-title">Welcome to Jeff Booth's Paradise</h2>
+      <p class="section-desc">
+        A co-op chaos game about teamwork, greed, and bad decisions. Don't call it gambling — call it a team-building exercise.
+      </p>
+      <div class="about-grid">
+        <div class="about-text">
+          <p>
+            An online 1-6 player co-op <strong>"casino crawler"</strong> where you and your friends share
+            one bank account and one massive debt. <strong>Gamble</strong>, buy sketchy items, make terrible
+            decisions, and climb an ominous casino tower to hit your loan shark's daily quota in
+            <strong>5 minutes</strong> — or face the consequences.
+          </p>
+          <p>
+            Each "day," you get <strong>5 minutes</strong> inside the casino to earn as much cash as possible.
+            The tower has <strong>4 distinctly themed floors</strong>, each with its own games of chance,
+            randomized every time you enter. Unlock higher floors as you get richer — and bolder.
+          </p>
+          <p>
+            It's not <em>my</em> money, it's <strong>our</strong> money. Coordinate with your friends to manage
+            a shared bank account while you gamble your way out of debt… because one bad all-in can
+            ruin the run for everyone.
+          </p>
+        </div>
+        <div class="about-features">
+          <div class="feature-card">
+            <div class="icon">🎲</div>
+            <h4>17 Games of Chance</h4>
+            <p>From blackjack to roulette and everything in between. Luck favors the bold.</p>
+          </div>
+          <div class="feature-card">
+            <div class="icon">🧐</div>
+            <h4>15+ Sketchy Items</h4>
+            <p>Bend the odds in your favor — or sell a body part or two. Tickets accepted.</p>
+          </div>
+          <div class="feature-card">
+            <div class="icon">🏗️</div>
+            <h4>4 Themed Floors</h4>
+            <p>Each floor has unique games and atmosphere. Unlock them as your wealth grows.</p>
+          </div>
+          <div class="feature-card">
+            <div class="icon">🎙️</div>
+            <h4>Proximity Voice Chat</h4>
+            <p>Coordinate heists, celebrate wins, and blame each other in real time.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="gameplay">
+    <div class="container">
+      <div class="section-label">How It Works</div>
+      <h2 class="section-title">Tickets, Trades, and Terrible Ideas</h2>
+      <p class="section-desc">
+        Hit your quota, complete unique challenges, and earn Tickets. Spend them on sketchy items
+        to bend the odds. But even if you do everything "right"... Lady Luck still has the final say.
+      </p>
+      <div class="gameplay-grid">
+        <div class="gameplay-card">
+          <div class="icon">⏰</div>
+          <h4>5 Minutes Per Day</h4>
+          <p>
+            You and your friends have exactly 5 minutes each day inside the casino to earn as much
+            as possible. Every second counts. Every bet matters.
+          </p>
+        </div>
+        <div class="gameplay-card">
+          <div class="icon">🏦</div>
+          <h4>Shared Bank Account</h4>
+          <p>
+            One account. One debt. One team. Coordinate your bets because a single bad all-in
+            can wipe out everyone's progress. Trust is optional.
+          </p>
+        </div>
+        <div class="gameplay-card">
+          <div class="icon">🎫</div>
+          <h4>Earn &amp; Spend Tickets</h4>
+          <p>
+            Complete challenges, hit quotas, or make sacrifices to earn Tickets. Trade them for
+            items that stack the deck in your favor — temporarily.
+          </p>
+        </div>
+        <div class="gameplay-card">
+          <div class="icon">🏆</div>
+          <h4>3 Endings to Discover</h4>
+          <p>
+            Around 2-3 hours of playtime with multiple endings. Your choices — and your luck —
+            determine how the story ends. Can you escape the debt?
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="features">
+    <div class="container">
+      <div class="section-label">Game Features</div>
+      <h2 class="section-title">Look Cool While You Lose</h2>
+      <p class="section-desc">
+        Spend Tickets on cosmetics back in the neighborhood. Is it optimal? No. Is it stylish?
+        Absolutely. (Your friends may scream at you.)
+      </p>
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="emoji">🥳</div>
+          <h5>1–6 Player Online Co-op</h5>
+          <p>Bring the whole squad — or risk it solo</p>
+        </div>
+        <div class="feature-item">
+          <div class="emoji">🃏</div>
+          <h5>17 Games of Chance</h5>
+          <p>Blackjack, roulette, slots, and more</p>
+        </div>
+        <div class="feature-item">
+          <div class="emoji">🧐</div>
+          <h5>15+ Sketchy Items</h5>
+          <p>Bend the odds with questionable purchases</p>
+        </div>
+        <div class="feature-item">
+          <div class="emoji">🏗️</div>
+          <h5>4 Themed Casino Floors</h5>
+          <p>Each floor has a unique vibe and games</p>
+        </div>
+        <div class="feature-item">
+          <div class="emoji">🥸</div>
+          <h5>Emotes &amp; Customization</h5>
+          <p>Express yourself while going bankrupt</p>
+        </div>
+        <div class="feature-item">
+          <div class="emoji">🎙️</div>
+          <h5>Proximity Voice Chat</h5>
+          <p>In-game voice for maximum chaos</p>
+        </div>
+        <div class="feature-item">
+          <div class="emoji">🎶</div>
+          <h5>Original Soundtrack</h5>
+          <p>Music from artists featured in HASTE, ROUNDS, and more</p>
+        </div>
+        <div class="feature-item">
+          <div class="emoji">🏆</div>
+          <h5>55 Steam Achievements</h5>
+          <p>Goals to chase beyond the debt</p>
+        </div>
+        <div class="feature-item">
+          <div class="emoji">⏰</div>
+          <h5>2-3 Hours Playtime</h5>
+          <p>Digestible sessions with 3 endings</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="tags-section">
+    <div class="container">
+      <div class="section-label">Popular Tags</div>
+      <h2 class="section-title">What Players Call It</h2>
+      <p class="section-desc">Community-defined tags from the Steam community.</p>
+      <div class="tags-cloud">
+        <span class="tag">Multiplayer</span>
+        <span class="tag">Gambling</span>
+        <span class="tag">Online Co-Op</span>
+        <span class="tag">Co-op</span>
+        <span class="tag">Physics</span>
+        <span class="tag">Comedy</span>
+        <span class="tag">Adventure</span>
+        <span class="tag">Exploration</span>
+        <span class="tag">First-Person</span>
+        <span class="tag">Atmospheric</span>
+        <span class="tag">Action Roguelike</span>
+        <span class="tag">3D</span>
+        <span class="tag">Procedural Generation</span>
+        <span class="tag">Time Management</span>
+        <span class="tag">Character Customization</span>
+        <span class="tag">Simulation</span>
+        <span class="tag">Resource Management</span>
+        <span class="tag">Action</span>
+        <span class="tag">Sandbox</span>
+        <span class="tag">Card Game</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section id="specs">
+    <div class="container">
+      <div class="section-label">System Requirements</div>
+      <h2 class="section-title">Can Your PC Handle It?</h2>
+      <p class="section-desc">Modest specs for maximum fun.</p>
+      <div class="reqs-grid">
+        <div class="reqs-card">
+          <h4>Minimum</h4>
+          <ul>
+            <li><span>OS</span> Windows 10</li>
+            <li><span>Processor</span> Core i5 6600</li>
+            <li><span>Memory</span> 8 GB RAM</li>
+            <li><span>Graphics</span> GTX 970</li>
+            <li><span>DirectX</span> Version 11</li>
+            <li><span>Network</span> Broadband Internet connection</li>
+            <li><span>Storage</span> 3 GB available space</li>
+          </ul>
+        </div>
+        <div class="reqs-card">
+          <h4>Recommended</h4>
+          <ul>
+            <li><span>OS</span> Windows 11</li>
+            <li><span>Processor</span> Intel Core i7 8700</li>
+            <li><span>Memory</span> 8 GB RAM</li>
+            <li><span>Graphics</span> GTX 1070</li>
+            <li><span>DirectX</span> Version 12</li>
+            <li><span>Network</span> Broadband Internet connection</li>
+            <li><span>Storage</span> 3 GB available space</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="container">
+      <h2>Ready to Gamble?</h2>
+      <p>
+        Grab your friends, share the debt, and find out if Lady Luck is on your side.
+        Available now on Steam.
+      </p>
+      <a href="https://mirofish.my/" class="btn-primary" target="_blank" rel="noopener">
+        Play Now on Steam
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="copyright">
+        &copy; 2026 Gamble With Your Friends. A TENSTACK game.
+      </div>
+      <div class="footer-links">
+        <a href="https://store.steampowered.com/app/3892270/Gamble_With_Your_Friends/" target="_blank" rel="noopener">Steam</a>
+        <a href="https://discord.com" target="_blank" rel="noopener">Discord</a>
+        <a href="https://twitter.com" target="_blank" rel="noopener">Twitter</a>
+        <a href="#" onclick="document.getElementById('hero').scrollIntoView({behavior:'smooth'}); return false;">Back to Top</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
