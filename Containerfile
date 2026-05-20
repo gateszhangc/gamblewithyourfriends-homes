@@ -1,7 +1,7 @@
 FROM nginx:alpine
 
 # Copy all static assets
-COPY index.html favicon.svg logo.svg /usr/share/nginx/html/
+COPY . /usr/share/nginx/html/
 
 # Custom nginx config for SPAs and cache control
 COPY nginx.conf /etc/nginx/conf.d/default.conf
